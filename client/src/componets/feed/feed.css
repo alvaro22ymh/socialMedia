@@ -1,0 +1,13 @@
+.feed{
+    flex: 6;
+    padding: 15px;
+}
+.noPostWrapper{
+    display: block;
+    padding: 50px;
+}
+.noPosts{
+    padding-left: 30%;
+    font-size: 30px;
+
+}
