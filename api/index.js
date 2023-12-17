@@ -13,6 +13,8 @@ const app = express();
 import {userRoutes} from './routes/users.js'
 import {authRoutes} from './routes/auth.js' 
 import {postRoutes} from './routes/posts.js' 
+import { conversationRoutes } from "./routes/conversation.js";
+import { messagesRoutes } from "./routes/messages.js";
 import { corsMiddleware } from "./middlewares/cors.js";
 
 dotenv.config();
@@ -60,6 +62,8 @@ app.use('/images', express.static(path.join(__dirname, 'public/images')))
 app.use('/api/users', userRoutes())
 app.use('/api/auth', authRoutes())
 app.use('/api/posts', postRoutes())
+app.use('/api/conversation', conversationRoutes())
+app.use('/api/messages', messagesRoutes())
 
 
 app.listen(1200, ()=> {

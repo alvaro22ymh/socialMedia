@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Online from "../online/Online"
 import "./rightbar.css"
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { Add, Remove } from "@mui/icons-material";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function RightBar({user}){
     const PF= process.env.REACT_APP_PUBLIC_FOLDER;
+    const {user:currentUser} = useContext(AuthContext);
 
     const [friends, setFriends] = useState([])
+    const [follow, setFollow] = useState()
 
     useEffect(()=>{
             const fetchFriends = async() =>{
@@ -19,14 +23,27 @@ export default function RightBar({user}){
                     } catch (error) {
                         console.log(error)
                     }
-            }
-               
+                  !currentUser.followings.includes(user._id)? setFollow(false)
+                                                      : setFollow(true)  
+            }     
         }
+            
+            
         fetchFriends()   
-    },[user])
+    },[user,currentUser])
     
  
-
+        const followUnfollow = async()=>{
+            if(user){
+                try {
+                    await axios.post(`http://localhost:1200/api/users/${user._id}/follow`, {userId: currentUser._id})
+                    setFollow(!follow)
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        }
+       
     const HomeRightbar = () =>{
         return (
             <>
@@ -45,7 +62,15 @@ export default function RightBar({user}){
 
     const ProfileRightbar = () =>{
         return (<>
-
+        {user.username!==currentUser.username && 
+                <button 
+               onClick={followUnfollow} className="rightbarFollowButton">
+                     {follow?'Unfollow' :'Follow'}  
+                     {follow?<Remove/> :<Add/> }  
+                </button>
+            }
+            
+          
             <h4 className="rightbarTitle">User information</h4>
             <div className="rightbarInfo">
                
@@ -70,27 +95,20 @@ export default function RightBar({user}){
              
             </div>
 
-            {user?  <h4 className="rightbarTitle">{
-                                friends.map((friend) => (
-                                    
-                                <div className="rightbarFollowings">
-                                    <Link to={`/profile/${friend.username}`}>
-                                        <div  className="rightbarFollowing">
-                                        <img src={PF+"person/"+friend.profilePicture} alt="" className="rightbarFollowingImg" />
-                                        <span className="rightbarFollowingName">{friend.username}</span>
+            {friends.length>0?  <h4 className="rightbarTitle">Friends{
+                                     friends.map((friend) => (
+                                        
+                                        <div className="rightbarFollowings">
+                                            <Link to={`/profile/${friend.username}`} style={{textDecoration: "none"}}>
+                                                <div  className="rightbarFollowing">
+                                                <img src={PF+"person/"+friend.profilePicture} alt="" className="rightbarFollowingImg" />
+                                                <span className="rightbarFollowingName">{friend.username}</span>
+                                                </div>
+                                            </Link>
                                         </div>
-                                    </Link>
-                                </div>
-                                    
-                            ))}
-                            
-                    </h4>
+                                         ))}
+                                 </h4>
                          :  <h4 className="rightbarTitle">No friends yet</h4>}
-      
-
-           
-
-
         </>)
     }
   

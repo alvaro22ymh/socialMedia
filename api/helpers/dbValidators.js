@@ -1,5 +1,6 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import Conversation from "../models/Conversation.js";
 
 export const emailExist = async(email='') => {
     const exist = await User.findOne({email});
@@ -26,6 +27,26 @@ export const postExistId = async(postId) => {
     if(!exist){
         throw new Error(`the post id ${postId} dont exist`)
     }
+}
+export const conversationExistId = async(conversationId) => {
+    const exist = await Conversation.findById(conversationId);
+    if(!exist){
+        throw new Error(`the conversation id ${conversationId} dont exist`)
+    }
+}
+export const isUserConversation = async(values,{req}) => {
+    const {sender,conversationId} = req.body
+     const conversation = await Conversation.findById(conversationId)
+    if(!conversation.members.includes(sender) ){
+        throw new Error(`the user ${sender} is not included on the conversation ${conversationId}`)
+     }
+}
+export const getIsUserConversation = async(values,{req}) => {
+    const {currentUserId,conversationId} = req.query
+     const conversation = await Conversation.findById(conversationId)
+    if(!conversation.members.includes(currentUserId) ){
+        throw new Error(`the user ${currentUserId} is not included on the conversation ${conversationId}`)
+     }
 }
 
 

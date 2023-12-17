@@ -110,26 +110,8 @@ export const deleteUserController = async(req,res) => {
     }
 
 
-    export const unfollowUserController = async(req,res) =>{
-        
-
-        if(req.body.userId !== req.params.id){
-            const userToUnfollow = await User.findById(req.params.id)
-            const userCurrent = await User.findById(req.body.userId)
-            if(userToUnfollow.followers.includes(userCurrent._id)){
-                await userCurrent.updateOne({$pull: {followings: userToUnfollow._id}})
-                await userToUnfollow.updateOne({$pull: {followers: userCurrent._id}})
-                res.status(200).json(`msg: User ${userToUnfollow.username} Unfollowed succesfully`)
-            }else{
-                res.status(403).json(`msg: you allready Unfollow ${userToUnfollow.username}, try another`)
-            }
-
-        }else{
-            res.status(403).json('You cant Unfollow yourself')
-        }
-
-    }
-    export const followUserController = async(req,res) =>{
+  
+    export const followUnfollowUserController = async(req,res) =>{
         
 
         if(req.body.userId !== req.params.id){
@@ -140,7 +122,9 @@ export const deleteUserController = async(req,res) => {
                 await userTofollow.updateOne({$push: {followers: userCurrent._id}})
                 res.status(200).json(`msg: User ${userTofollow.username} followed succesfully`)
             }else{
-                res.status(403).json(`msg: you allready follow ${userTofollow.username}, try another`)
+                await userCurrent.updateOne({$pull: {followings: userTofollow._id}})
+                await userTofollow.updateOne({$pull: {followers: userCurrent._id}})
+                res.status(200).json(`msg: User ${userTofollow.username} Unfollowed succesfully`)
             }
 
         }else{

@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import { body, param, check, query } from 'express-validator'
 
-import { createUserController, deleteUserController, followUserController, getFriendsUserController, getUserController, unfollowUserController, updateUserController } from '../controllers/user.js';
+import { createUserController, deleteUserController, followUnfollowUserController, getFriendsUserController, getUserController, updateUserController } from '../controllers/user.js';
 import { fieldsValidator, fieldsValidatorStopper } from '../middlewares/validate-fields.js';
 import { UserExist, emailExist, userExistId } from '../helpers/dbValidators.js';
 
@@ -43,7 +43,7 @@ import { UserExist, emailExist, userExistId } from '../helpers/dbValidators.js';
     router.get("/friends/:userId", getFriendsUserController)
 
 
-    //follow a user
+    //follow/unfollow a user
     router.post("/:id/follow",[ 
       param('id', 'Is not a valid mongoId').isMongoId(),
       body('userId', 'Is not a valid mongoId').isMongoId(),
@@ -51,17 +51,9 @@ import { UserExist, emailExist, userExistId } from '../helpers/dbValidators.js';
       param('id').custom(userExistId),
       body('userId').custom(userExistId),
       fieldsValidator ],
-      followUserController)
+      followUnfollowUserController)
 
 
-    //unfollow a user
-    router.post("/:id/unfollow",[ 
-      param('id', 'Is not a valid mongoId').isMongoId(),
-      body('userId', 'Is not a valid mongoId').isMongoId(),
-      fieldsValidatorStopper,
-      param('id').custom(userExistId),
-      body('userId').custom(userExistId),
-      fieldsValidator ],
-      unfollowUserController)
+  
     return router
  }
